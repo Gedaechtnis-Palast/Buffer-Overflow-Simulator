@@ -1,6 +1,3 @@
-#ifndef TEXTINPUT_H
-#define TEXTINPUT_H
-
 typedef struct {
     char *buffer;
     int current_size;
@@ -14,6 +11,4 @@ typedef struct {
  * @return INPUT struct containing the text
  */
 INPUT getInput();
-
-#endif
 

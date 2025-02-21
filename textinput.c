@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 INPUT getInput() {
-    INPUT input = {(char *)malloc(10 * sizeof(char)), 0, 10, '0'};
+    INPUT input = {(char *)malloc(10 * sizeof(char)), 0, 10, '\0'};
     while((input.ch = getchar()) != '\n' && input.ch != EOF) {
         if (input.current_size + 1 >= input.capacity) {
             input.capacity *= 2;
@@ -16,6 +16,7 @@ INPUT getInput() {
             input.buffer = temp;
         }
         input.buffer[input.current_size] = input.ch;
+        input.buffer[input.current_size+1] = '\0';
         input.current_size++;
     }
     return input;

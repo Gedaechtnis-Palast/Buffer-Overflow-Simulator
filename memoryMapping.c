@@ -6,7 +6,6 @@ SEGMENT_COLLECTION staticMem;
 
 SEGMENT createSegment(void *startAddress, void *endAddress, void *overflowEndAddress)
 {
-    printf("Segment: %p %lu %p\n", startAddress, (uintptr_t)startAddress);
     SEGMENT segment = {NULL, NULL, 0, 0, 0};
     if (startAddress != NULL) // TODO: error handling
     {
@@ -44,18 +43,17 @@ bool initMemoryMap()
 void printMemoryMap()
 {
     SEGMENT currentSegment = *stack.startSegmentAddress;
-    printf("start %lu current %lu diff %lu", stack.startAddress, currentSegment.startAddress, currentSegment.startAddress - stack.startAddress);
     for (unsigned long i = 0; i < stack.mappedSegments; i++)
     {
+        printf("start %lu current %lu diff %lu", stack.startAddress, currentSegment.startAddress, (currentSegment.startAddress - stack.startAddress));
         unsigned long fillerDiff = currentSegment.startAddress - stack.startAddress;
-        printf("\nf %lu", fillerDiff / 8);
+        printf("\nf %lu %lu %lu", fillerDiff, (currentSegment.startAddress - stack.startAddress), (currentSegment.startAddress - stack.startAddress));
         for (unsigned long filler = 0; filler < fillerDiff; filler++)
         {
             printf("%s.", WHITE);
-            return;
         }
         unsigned long memoryDiff = currentSegment.endAddress - currentSegment.startAddress;
-        printf("%lu", memoryDiff);
+        // printf("%lu", memoryDiff);
         for (unsigned long memSpace = 0; memSpace < memoryDiff; memSpace++)
         {
             printf("\nms %s\n:", GREEN);

@@ -50,14 +50,25 @@ bool initMemoryMap()
     stack = createSegmentCollection(20);
     heap = createSegmentCollection(20);
     staticMem = createSegmentCollection(20);
+    return (&stack != NULL && &heap != NULL && &staticMem != NULL);
 };
 
 void printMemoryMap()
 {
-    SEGMENT *currentSegment = stack.startSegmentAddress;
-    for (unsigned long i = 0; i < stack.mappedSegments; i++)
+    printf("[stack]\n");
+    printSegmentCollection(&stack);
+    printf("[heap]\n");
+    printSegmentCollection(&heap);
+    printf("[static]\n");
+    printSegmentCollection(&staticMem);
+};
+
+void printSegmentCollection(SEGMENT_COLLECTION *collection)
+{
+    SEGMENT *currentSegment = collection->startSegmentAddress;
+    for (unsigned long i = 0; i < collection->mappedSegments; i++)
     {
-        unsigned long fillerDiff = currentSegment->startAddress - stack.startAddress;
+        unsigned long fillerDiff = currentSegment->startAddress - collection->startAddress;
         for (unsigned long filler = 0; filler < fillerDiff; filler++)
         {
             printf("%s|", WHITE);
@@ -77,7 +88,8 @@ void printMemoryMap()
         }
         currentSegment = currentSegment->next;
     }
-};
+    printf("\n");
+}
 
 bool allocStack(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize)
 {
@@ -181,3 +193,51 @@ bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress
     }
     return true;
 };
+
+bool freeSegment(void *address)
+{
+    if (freeMemory(address, &stack))
+    {
+        return true;
+    }
+    // if (freeMemory(address, &heap))
+    // {
+    //     return true;
+    // }
+    // if (freeMemory(address, &staticMem))
+    // {
+    //     return true;
+    // }
+}
+
+bool freeMemory(void *address, SEGMENT_COLLECTION *collection)
+{
+    unsigned long addressValue = (uintptr_t)address;
+    bool notFreed = true;
+    SEGMENT *start = collection->startSegmentAddress;
+    while (notFreed && start != NULL)
+    {
+        if (collection->startSegmentAddress->startAddress == addressValue)
+        {
+            collection->startSegmentAddress = collection->startSegmentAddress->next;
+            free((void *)start);
+            notFreed = false;
+        }
+        else if (start->startAddress == addressValue)
+        {
+            start->previous->next = start->next;
+            start->next->previous = start->previous;
+            free((void *)start);
+            int *test = (int *)malloc(sizeof(int));
+            printf("%p\n", test);
+            free((void *)test);
+            printf("%p\n", test);
+            notFreed = false;
+        }
+        else
+        {
+            start = start->next;
+        }
+    }
+    return !notFreed;
+}

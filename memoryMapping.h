@@ -47,6 +47,7 @@ SEGMENT_COLLECTION createSegmentCollection(int initialSegmentCapacity);
  */
 bool initMemoryMap();
 void printMemoryMap();
+void printSegmentCollection(SEGMENT_COLLECTION *collection);
 
 /**
  * Accepts the start and end address of a variable to map for the memory visualization.
@@ -72,8 +73,15 @@ bool allocHeap(void *startAddress, void *endAddress, void *overflowEndAddress, s
  * @overflowEndAddress the address indicating the reach of the overflow over the endAddress. (optional)
  */
 bool allocStatic(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize);
-
 /**
  * The logic behind allocStack, allocHeap and allocStatic.
  */
 bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize, SEGMENT_COLLECTION *collection);
+/**
+ * Used to remove a variable from the memory in any memory block like stack, heap or static memory.
+ */
+bool freeSegment(void *address);
+/**
+ * Used to remove a variable from the memory from a specific block like stack, heap or static memory.
+ */
+bool freeMemory(void *address, SEGMENT_COLLECTION *collection);

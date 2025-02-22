@@ -7,6 +7,7 @@
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
 #define WHITE "\x1B[37m"
+#define NORMAL "\x1B[0m"
 
 /**
  * A segment represents a piece of data in memory.

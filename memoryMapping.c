@@ -88,7 +88,7 @@ void printSegmentCollection(SEGMENT_COLLECTION *collection)
         }
         currentSegment = currentSegment->next;
     }
-    printf("\n");
+    printf("%s\n", NORMAL);
 }
 
 bool allocStack(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize)
@@ -200,14 +200,14 @@ bool freeSegment(void *address)
     {
         return true;
     }
-    // if (freeMemory(address, &heap))
-    // {
-    //     return true;
-    // }
-    // if (freeMemory(address, &staticMem))
-    // {
-    //     return true;
-    // }
+    if (freeMemory(address, &heap))
+    {
+        return true;
+    }
+    if (freeMemory(address, &staticMem))
+    {
+        return true;
+    }
 }
 
 bool freeMemory(void *address, SEGMENT_COLLECTION *collection)
@@ -220,18 +220,32 @@ bool freeMemory(void *address, SEGMENT_COLLECTION *collection)
         if (collection->startSegmentAddress->startAddress == addressValue)
         {
             collection->startSegmentAddress = collection->startSegmentAddress->next;
+            if (collection->startSegmentAddress != NULL)
+            {
+                collection->startAddress = collection->startSegmentAddress->startAddress;
+            }
+            else
+            {
+                collection->startAddress = 0;
+                collection->endAddress = 0;
+            }
             free((void *)start);
+            collection->mappedSegments--;
             notFreed = false;
         }
         else if (start->startAddress == addressValue)
         {
             start->previous->next = start->next;
-            start->next->previous = start->previous;
+            if (start->next == NULL)
+            {
+                collection->endAddress = start->previous->endAddress;
+            }
+            else
+            {
+                start->next->previous = start->previous;
+            }
             free((void *)start);
-            int *test = (int *)malloc(sizeof(int));
-            printf("%p\n", test);
-            free((void *)test);
-            printf("%p\n", test);
+            collection->mappedSegments--;
             notFreed = false;
         }
         else

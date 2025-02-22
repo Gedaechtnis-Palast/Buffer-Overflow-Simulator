@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define STR_LEN 80
+#include <string.h>
+
+#define STR_LEN 256 // Maximale Länge des Dateipfads
 
 char* readFile(const char* filename) {
     FILE *fp;
@@ -9,38 +11,57 @@ char* readFile(const char* filename) {
 
     // Datei öffnen
     fp = fopen(filename, "r");
-    if (fp == NULL){
-        fprintf(stderr, "Fehler beim öffnen der Datei '%s'\n", filename);
+    if (fp == NULL) {
+        fprintf(stderr, "Fehler beim Öffnen der Datei '%s'\n", filename);
         return NULL; 
     }
+
     // Dateigröße ermitteln
     fseek(fp, 0, SEEK_END);
     size = ftell(fp);
     rewind(fp);
 
-    // Speicher für den inhalt der Datei reservieren
-    buffer = (char*)malloc((size + 1) + sizeof(char));
-    if (buffer == NULL){
-        fprintf(stderr, "Speicherzuweisung felgeschlagen\n");
+    // Speicher für den Inhalt der Datei reservieren
+    buffer = (char*)malloc(size + 1); // +1 für Nullterminierung
+    if (buffer == NULL) {
+        fprintf(stderr, "Speicherzuweisung fehlgeschlagen\n");
         fclose(fp);
         return NULL;
     }
+
     // Dateiinhalt lesen
-    fread(buffer, sizeof(char), size, fp); // Nullterminierung
+    if (fread(buffer, sizeof(char), size, fp) != size) {
+        fprintf(stderr, "Fehler beim Lesen der Datei\n");
+        free(buffer);
+        fclose(fp);
+        return NULL;
+    }
+    buffer[size] = '\0'; // Nullterminierung hinzufügen
+
     // Datei schließen
     fclose(fp);
-
     return buffer;
-    
 }
 
-int main(){
-    const char *filename = "test.txt";
-    char *content = readFile(filename);
+int main() {
+    char filename[STR_LEN];
 
-    if (content != NULL){
-        printf("Dateiinhalt:\n%s\n", content);
+    // Benutzereingabe für den Dateipfad
+    printf("Bitte geben Sie den Dateipfad ein: ");
+    if (fgets(filename, STR_LEN, stdin) == NULL) {
+        fprintf(stderr, "Fehler beim Einlesen des Dateipfads\n");
+        return EXIT_FAILURE;
+    }
+
+    // Entferne das '\n' am Ende des Eingabestrings
+    filename[strcspn(filename, "\n")] = '\0';
+
+    // Datei einlesen
+    char *content = readFile(filename);
+    if (content != NULL) {
+        printf("\nDateiinhalt:\n%s\n", content);
         free(content); // Speicher freigeben
     }
+
     return EXIT_SUCCESS;
 }

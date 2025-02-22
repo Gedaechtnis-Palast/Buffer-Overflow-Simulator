@@ -1,16 +1,17 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#define NORMAL "\x1B[0m"
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
-#define BLUE "\x1B[34m"
-#define MAGENTA "\x1B[35m"
-#define CYAN "\x1B[36m"
 #define WHITE "\x1B[37m"
 
+/**
+ * A segment represents a piece of data in memory.
+ * Any data stored in variables can be turned into a segment.
+ */
 typedef struct SEGMENT
 {
     struct SEGMENT *next;
@@ -20,6 +21,9 @@ typedef struct SEGMENT
     unsigned long overflowEndAddress;
 } SEGMENT;
 
+/**
+ * It is a collection of segments representing the start of a linked list with some extra meta info about the mapped memory size.
+ */
 typedef struct
 {
     SEGMENT *startSegmentAddress;
@@ -33,7 +37,7 @@ typedef struct
 /**
  * Creates a SEGMENT, which represents data stored in the memory.
  */
-SEGMENT createSegment(void *startAddress, void *endAddress, void *overflowEndAddress);
+SEGMENT *createSegment(void *startAddress, void *endAddress, void *overflowEndAddress);
 /**
  * Creates a SEGMENT_COLLECTION, which represents either the heap, stack or static areas in memory.
  */
@@ -69,4 +73,7 @@ bool allocHeap(void *startAddress, void *endAddress, void *overflowEndAddress, s
  */
 bool allocStatic(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize);
 
+/**
+ * The logic behind allocStack, allocHeap and allocStatic.
+ */
 bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize, SEGMENT_COLLECTION *collection);

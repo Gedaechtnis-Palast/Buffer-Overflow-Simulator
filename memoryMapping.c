@@ -4,21 +4,33 @@ SEGMENT_COLLECTION stack;
 SEGMENT_COLLECTION heap;
 SEGMENT_COLLECTION staticMem;
 
-SEGMENT createSegment(void *startAddress, void *endAddress, void *overflowEndAddress)
+SEGMENT *createSegment(void *startAddress, void *endAddress, void *overflowEndAddress)
 {
-    SEGMENT segment = {NULL, NULL, 0, 0, 0};
-    if (startAddress != NULL) // TODO: error handling
+    SEGMENT *segment = (SEGMENT *)malloc(sizeof(SEGMENT));
+    if (!segment)
     {
-        segment.startAddress = (uintptr_t)startAddress;
+        printf("Memory allocation failed!\n");
+        return NULL;
     }
-    if (endAddress != NULL)
-    {
-        segment.endAddress = (uintptr_t)endAddress;
-    }
+
+    if (startAddress != NULL)
+        segment->startAddress = (uintptr_t)startAddress;
+    else
+        segment->startAddress = 0;
+
+    if (endAddress != 0)
+        segment->endAddress = (uintptr_t)endAddress;
+    else
+        segment->endAddress = 0;
+
     if (overflowEndAddress != NULL)
-    {
-        segment.overflowEndAddress = (uintptr_t)overflowEndAddress;
-    }
+        segment->overflowEndAddress = (uintptr_t)overflowEndAddress;
+    else
+        segment->overflowEndAddress = 0;
+
+    segment->next = NULL;
+    segment->previous = NULL;
+
     return segment;
 };
 
@@ -42,27 +54,29 @@ bool initMemoryMap()
 
 void printMemoryMap()
 {
-    SEGMENT currentSegment = *stack.startSegmentAddress;
+    SEGMENT *currentSegment = stack.startSegmentAddress;
     for (unsigned long i = 0; i < stack.mappedSegments; i++)
     {
-        printf("start %lu current %lu diff %lu", stack.startAddress, currentSegment.startAddress, (currentSegment.startAddress - stack.startAddress));
-        unsigned long fillerDiff = currentSegment.startAddress - stack.startAddress;
-        printf("\nf %lu %lu %lu", fillerDiff, (currentSegment.startAddress - stack.startAddress), (currentSegment.startAddress - stack.startAddress));
+        unsigned long fillerDiff = currentSegment->startAddress - stack.startAddress;
         for (unsigned long filler = 0; filler < fillerDiff; filler++)
         {
-            printf("%s.", WHITE);
+            printf("%s|", WHITE);
         }
-        unsigned long memoryDiff = currentSegment.endAddress - currentSegment.startAddress;
-        // printf("%lu", memoryDiff);
-        for (unsigned long memSpace = 0; memSpace < memoryDiff; memSpace++)
+        unsigned long memoryDiff = currentSegment->endAddress - currentSegment->startAddress;
+        for (unsigned long ms = 0; ms < memoryDiff; ms++)
         {
-            printf("\nms %s\n:", GREEN);
-            return;
+            printf("%s|", GREEN);
         }
+        if (currentSegment->overflowEndAddress != 0)
+        {
+            unsigned long overflowDiff = currentSegment->overflowEndAddress - currentSegment->endAddress;
+            for (unsigned long os = 0; os < overflowDiff; os++)
+            {
+                printf("%s|", RED);
+            }
+        }
+        currentSegment = currentSegment->next;
     }
-    // get max and min from segment collection
-    // get each segment from collection
-    //
 };
 
 bool allocStack(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize)
@@ -80,37 +94,38 @@ bool allocStatic(void *startAddress, void *endAddress, void *overflowEndAddress,
 
 bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize, SEGMENT_COLLECTION *collection)
 {
-    SEGMENT newSegment = createSegment(startAddress, endAddress, overflowEndAddress);
+    SEGMENT *newSegment = createSegment(startAddress, endAddress, overflowEndAddress);
     /**
      * Modify final size if necessary.
      */
-    if (newSegment.startAddress != 0)
+    if (newSegment->startAddress != 0)
     {
-        if (collection->startAddress == 0 || collection->startAddress > newSegment.startAddress)
+        if (collection->startAddress == 0 || collection->startAddress > newSegment->startAddress)
         {
-            collection->startAddress = newSegment.startAddress;
+            collection->startAddress = newSegment->startAddress;
         }
-        else if (collection->endAddress < newSegment.startAddress)
+        else if (collection->endAddress < newSegment->startAddress)
         {
-            collection->endAddress = newSegment.startAddress + dataTypeSize;
+            collection->endAddress = newSegment->startAddress + dataTypeSize;
         }
     }
     else
     {
         return false;
     }
-    if (newSegment.endAddress != 0)
+    if (newSegment->endAddress == 0)
     {
-        if (collection->endAddress < newSegment.endAddress)
-        {
-            collection->endAddress = newSegment.endAddress + dataTypeSize;
-        }
+        newSegment->endAddress = newSegment->startAddress + dataTypeSize;
     }
-    if (newSegment.overflowEndAddress != 0)
+    if (collection->endAddress < newSegment->endAddress)
     {
-        if (collection->endAddress < newSegment.overflowEndAddress)
+        collection->endAddress = newSegment->endAddress + dataTypeSize;
+    }
+    if (newSegment->overflowEndAddress != 0)
+    {
+        if (collection->endAddress < newSegment->overflowEndAddress)
         {
-            collection->endAddress = newSegment.overflowEndAddress + dataTypeSize;
+            collection->endAddress = newSegment->overflowEndAddress + dataTypeSize;
         }
     }
     /**
@@ -118,30 +133,49 @@ bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress
      */
     if (collection->startSegmentAddress == NULL)
     {
-        // printf("Before:%p %lu %lu\n", collection->startSegmentAddress, collection->mappedSegments, collection->startAddress);
-        collection->startSegmentAddress = &newSegment;
+        collection->startSegmentAddress = newSegment;
         collection->mappedSegments++;
-        // printf("After:%p %lu %lu\n", collection->startSegmentAddress, collection->mappedSegments, collection->startAddress);
     }
     else
     {
-        SEGMENT *oldSegmentAddress = collection->startSegmentAddress;
-        if ((*oldSegmentAddress).startAddress > newSegment.startAddress)
+        SEGMENT *listedSegmentAddress = collection->startSegmentAddress;
+        while (1)
         {
-            newSegment.next = oldSegmentAddress;
-            if ((*oldSegmentAddress).previous == NULL)
+            if ((*listedSegmentAddress).startAddress > newSegment->startAddress)
             {
-                collection->startSegmentAddress = &newSegment;
-                (*oldSegmentAddress).previous = &newSegment;
+                newSegment->next = listedSegmentAddress;
+                if ((*listedSegmentAddress).previous == NULL)
+                {
+                    collection->startSegmentAddress = newSegment;
+                    (*listedSegmentAddress).previous = newSegment;
+                    collection->mappedSegments++;
+                    break;
+                }
+                else
+                {
+                    newSegment->previous = listedSegmentAddress->previous;
+                    newSegment->next = listedSegmentAddress;
+
+                    listedSegmentAddress->previous = newSegment;
+
+                    newSegment->previous->next = newSegment;
+                    collection->mappedSegments++;
+                    break;
+                }
             }
             else
             {
-                newSegment.previous = oldSegmentAddress->previous;
-                newSegment.next = oldSegmentAddress;
-
-                oldSegmentAddress->previous = &newSegment;
-
-                newSegment.previous->next = &newSegment;
+                if (listedSegmentAddress->next == NULL)
+                {
+                    listedSegmentAddress->next = newSegment;
+                    newSegment->previous = listedSegmentAddress;
+                    collection->mappedSegments++;
+                    break;
+                }
+                else
+                {
+                    listedSegmentAddress = listedSegmentAddress->next;
+                }
             }
         }
     }

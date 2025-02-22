@@ -2,8 +2,19 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct
+#define NORMAL "\x1B[0m"
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
+#define WHITE "\x1B[37m"
+
+typedef struct SEGMENT
 {
+    struct SEGMENT *next;
+    struct SEGMENT *previous;
     unsigned long startAddress;
     unsigned long endAddress;
     unsigned long overflowEndAddress;
@@ -11,8 +22,9 @@ typedef struct
 
 typedef struct
 {
-    SEGMENT array;
-    SEGMENT finalSize;
+    SEGMENT *startSegmentAddress;
+    unsigned long startAddress;
+    unsigned long endAddress;
     int mappedSegments;
     int segmentCapacity;
 
@@ -57,4 +69,4 @@ bool allocHeap(void *startAddress, void *endAddress, void *overflowEndAddress, s
  */
 bool allocStatic(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize);
 
-bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize, SEGMENT_COLLECTION collection);
+bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress, size_t dataTypeSize, SEGMENT_COLLECTION *collection);

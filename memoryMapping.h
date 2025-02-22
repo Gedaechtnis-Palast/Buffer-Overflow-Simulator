@@ -1,19 +1,31 @@
-#include <stdbool.h>
-
-typedef enum
+typedef struct
 {
-    CHAR,
-    INT,
-    FLOAT,
-    DOUBLE,
-} TYPE;
+    int startAddress;
+    int endAddress;
+    int overflowEndAddress
+} SEGMENT;
+
 /**
- * Takes the address of a value to map, alongside the information:
- * - if it is an array
- * - allocated size in memory
- * - the size it is allowed to have (buffer overflows normally do go beyond this value)
- * - the type
+ * Accepts the start and end address of a variable to map for the memory visualization.
+ * Optionally an extra address can be passed to indicate an overflow reaching over the end address.
+ * @startAddress the pointer to a variable. (required)
+ * @endAddress the pointer to the last allocated cell of an array. (optional)
+ * @overflowEndAddress the address indicating the reach of the overflow over the endAddress. (optional)
  */
-int allocHeap(void *startAddress, bool isArray, int allocatedSize, int allowedSize, TYPE dataType);
-int allocStack(void *startAddress, bool isArray, int allocatedSize, int allowedSize, TYPE dataType);
-int allocStatic(void *startAddress, bool isArray, int allocatedSize, int allowedSize, TYPE dataType);
+int allocHeap(void *startAddress, void *endAddress, void *overflowEndAddress);
+/**
+ * Accepts the start and end address of a variable to map for the memory visualization.
+ * Optionally an extra address can be passed to indicate an overflow reaching over the end address.
+ * @startAddress the pointer to a variable. (required)
+ * @endAddress the pointer to the last allocated cell of an array. (optional)
+ * @overflowEndAddress the address indicating the reach of the overflow over the endAddress. (optional)
+ */
+int allocStack(void *startAddress, void *endAddress, void *overflowEndAddress);
+/**
+ * Accepts the start and end address of a variable to map for the memory visualization.
+ * Optionally an extra address can be passed to indicate an overflow reaching over the end address.
+ * @startAddress the pointer to a variable. (required)
+ * @endAddress the pointer to the last allocated cell of an array. (optional)
+ * @overflowEndAddress the address indicating the reach of the overflow over the endAddress. (optional)
+ */
+int allocStatic(void *startAddress, void *endAddress, void *overflowEndAddress);

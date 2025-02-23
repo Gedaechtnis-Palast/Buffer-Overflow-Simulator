@@ -1,0 +1,41 @@
+# Priotities
+
+- ### Visualisierung
+  - [ ] Terminal ASCII art
+    - [ ] Address scaling visualization of memory layout
+    - [ ] return addresses from methods
+    - [ ] addresses from variables
+    - [ ] differentiate Acceptable/Malicious changes in memory (color)
+      - [ ] before after comparison
+  - [ ] Terminal ncurses/pdcurses (optional)
+    - [ ] Same as above
+- ### User input
+  - [ ] Buffer
+    - [ ] File as input
+      - [ ] get file path
+      - [ ] read file input
+      - [ ] error handling
+        - [ ] file not found
+        - [ ] no content in file
+        - [ ] buffer size limit (maybe dynamically set)
+    - [ ] buffer input via terminal
+      - [ ] at the end of command
+      - [ ] error handling like in file input
+- ### Config
+  - [ ] Configuration file
+    - [ ] either default file
+  - [ ] Terminal
+    - [ ] file path for config
+    - [ ] flags for command
+  - options
+    - show addresses for easier attacks
+- ### Attacks
+  - [ ] return address overwrite
+  - [ ] loop skip
+    - [ ] off by one
+  - [ ] DEP
+    - [ ] show effectiveness
+    - [ ] show how to bypass
+  - [ ] Format String Vulnerability
+  - [ ] Integer Overflow Leading to Buffer Overflow
+  - [ ] Bypassing ASLR (Address Space Layout Randomization) (just show addresses)

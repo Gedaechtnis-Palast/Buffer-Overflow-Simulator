@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include "loopiterator.h"
 
 int main(){
-    printf("Hallo");
+    loopIterator();
+
     return 0;
 }

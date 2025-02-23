@@ -10,7 +10,7 @@ char* readFile(const char* filename) {
     size_t size = 0;
 
     // Datei öffnen
-    fp = fopen(filename, "r");
+    fp = fopen(filename, "rb");
     if (fp == NULL) {
         fprintf(stderr, "Fehler beim Öffnen der Datei '%s'\n", filename);
         return NULL; 

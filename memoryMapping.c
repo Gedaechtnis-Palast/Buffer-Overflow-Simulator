@@ -55,7 +55,7 @@ bool initMemoryMap()
 
 void printMemoryMap()
 {
-    printf("[stack]\n");
+    printf("\n[stack]\n");
     printSegmentCollection(&stack);
     printf("[heap]\n");
     printSegmentCollection(&heap);

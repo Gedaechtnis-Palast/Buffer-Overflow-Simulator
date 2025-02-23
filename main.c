@@ -1,10 +1,10 @@
 #include "memoryMapping.h"
-#include "loopiterator.h"
+#include "loopEntryAttack.h"
 #include "fileinput.h"
 #include <stdbool.h>
 
 #define HELP_FLAG "-h"
-#define FILE_PATH_FLAG "-fp"
+#define FILE_PATH_FLAG "-p"
 #define USE_FILE_INPUT "--use-file-input"
 #define AUTO_ATTACK_FLAG "--auto-attack"
 #define LOOP_ENTRY_ATTACK "--loop-entry-attack"
@@ -18,7 +18,8 @@ int main(int argc, char **argv)
     bool filenameProvided = false;
     bool automatedAttack = false;
     bool depSecurityActive = false;
-    bool loopEntryAttack = false;
+    bool doLoopEntryAttack = false;
+    bool useFileInput = false;
 
     for (int i = 1; i < argc; i++)
     {
@@ -33,6 +34,11 @@ int main(int argc, char **argv)
             filenameProvided = true;
             continue;
         }
+        if (!strcmp(argv[i], USE_FILE_INPUT))
+        {
+            useFileInput = true;
+            continue;
+        }
         if (!strcmp(argv[i], AUTO_ATTACK_FLAG))
         {
             automatedAttack = true;
@@ -45,11 +51,41 @@ int main(int argc, char **argv)
         }
         if (strcmp(argv[i], LOOP_ENTRY_ATTACK))
         {
-            loopEntryAttack = true;
+            doLoopEntryAttack = true;
             continue;
         }
     }
 
+    initMemoryMap();
+
+    if (useFileInput)
+    {
+        if (!filenameProvided)
+        { // Benutzereingabe für den Dateipfad
+            printf("Bitte geben Sie den Dateipfad ein: ");
+            if (fgets(filename, STR_LEN, stdin) == NULL)
+            {
+                fprintf(stderr, "Fehler beim Einlesen des Dateipfads\n");
+                return EXIT_FAILURE;
+            }
+
+            // Entferne das '\n' am Ende des Eingabestrings
+            filename[strcspn(filename, "\n")] = '\0';
+        }
+
+        // Datei einlesen
+        char *content = readFile(filename);
+        if (content != NULL)
+        {
+            printf("\nDateiinhalt:\n%s\n", content);
+            free(content); // Speicher freigeben
+        }
+    }
+
+    if (loopEntryAttack)
+    {
+        loopEntryAttack();
+    }
     if (automatedAttack)
     {
         printf("automated attack\n");
@@ -57,27 +93,6 @@ int main(int argc, char **argv)
     if (depSecurityActive)
     {
         printf("DEP security is active\n");
-    }
-
-    if (!filenameProvided)
-    { // Benutzereingabe für den Dateipfad
-        printf("Bitte geben Sie den Dateipfad ein: ");
-        if (fgets(filename, STR_LEN, stdin) == NULL)
-        {
-            fprintf(stderr, "Fehler beim Einlesen des Dateipfads\n");
-            return EXIT_FAILURE;
-        }
-
-        // Entferne das '\n' am Ende des Eingabestrings
-        filename[strcspn(filename, "\n")] = '\0';
-    }
-
-    // Datei einlesen
-    char *content = readFile(filename);
-    if (content != NULL)
-    {
-        printf("\nDateiinhalt:\n%s\n", content);
-        free(content); // Speicher freigeben
     }
 
     return EXIT_SUCCESS;

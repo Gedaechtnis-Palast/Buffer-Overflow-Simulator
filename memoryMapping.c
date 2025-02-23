@@ -136,7 +136,7 @@ bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress
     {
         if (collection->endAddress < newSegment->overflowEndAddress)
         {
-            collection->endAddress = newSegment->overflowEndAddress + dataTypeSize;
+            collection->endAddress = newSegment->overflowEndAddress;
         }
     }
     /**
@@ -152,13 +152,13 @@ bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress
         SEGMENT *listedSegmentAddress = collection->startSegmentAddress;
         while (1)
         {
-            if ((*listedSegmentAddress).startAddress > newSegment->startAddress)
+            if (listedSegmentAddress->startAddress > newSegment->startAddress)
             {
                 newSegment->next = listedSegmentAddress;
-                if ((*listedSegmentAddress).previous == NULL)
+                if (listedSegmentAddress->previous == NULL)
                 {
                     collection->startSegmentAddress = newSegment;
-                    (*listedSegmentAddress).previous = newSegment;
+                    listedSegmentAddress->previous = newSegment;
                     collection->mappedSegments++;
                     break;
                 }

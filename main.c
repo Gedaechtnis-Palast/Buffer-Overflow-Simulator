@@ -1,5 +1,6 @@
 #include "loopiterator.h"
 #include "fileinput.h"
+#include "memoryMapping.h"
 #include <stdbool.h>
 
 #define FILE_PATH_FLAG "-p"

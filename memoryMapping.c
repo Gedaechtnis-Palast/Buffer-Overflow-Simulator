@@ -34,22 +34,21 @@ SEGMENT *createSegment(void *startAddress, void *endAddress, void *overflowEndAd
     return segment;
 };
 
-SEGMENT_COLLECTION createSegmentCollection(int initialSegmentCapacity)
+SEGMENT_COLLECTION createSegmentCollection()
 {
     SEGMENT_COLLECTION collection = {
         NULL,
         0,
         0,
-        0,
-        initialSegmentCapacity};
+        0};
     return collection;
 };
 
 bool initMemoryMap()
 {
-    stack = createSegmentCollection(20);
-    heap = createSegmentCollection(20);
-    staticMem = createSegmentCollection(20);
+    stack = createSegmentCollection();
+    heap = createSegmentCollection();
+    staticMem = createSegmentCollection();
     return (&stack != NULL && &heap != NULL && &staticMem != NULL);
 };
 
@@ -131,7 +130,7 @@ bool allocSegment(void *startAddress, void *endAddress, void *overflowEndAddress
     }
     if (collection->endAddress < newSegment->endAddress)
     {
-        collection->endAddress = newSegment->endAddress + dataTypeSize;
+        collection->endAddress = newSegment->endAddress;
     }
     if (newSegment->overflowEndAddress != 0)
     {

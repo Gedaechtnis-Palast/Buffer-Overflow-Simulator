@@ -31,7 +31,6 @@ typedef struct
     unsigned long startAddress;
     unsigned long endAddress;
     int mappedSegments;
-    int segmentCapacity;
 
 } SEGMENT_COLLECTION;
 
@@ -42,7 +41,7 @@ SEGMENT *createSegment(void *startAddress, void *endAddress, void *overflowEndAd
 /**
  * Creates a SEGMENT_COLLECTION, which represents either the heap, stack or static areas in memory.
  */
-SEGMENT_COLLECTION createSegmentCollection(int initialSegmentCapacity);
+SEGMENT_COLLECTION createSegmentCollection();
 /**
  * Initialization of internal memory mapping for a console visualization.
  */

@@ -7,7 +7,7 @@ INPUT getInput() {
     while((input.ch = getchar()) != '\n' && input.ch != EOF) {
         if (input.current_size + 1 >= input.capacity) {
             input.capacity *= 2;
-            char *temp = realloc(input.buffer, input.capacity * sizeof(char));
+            char *temp = (char *)realloc(input.buffer, input.capacity * sizeof(char));
             if (temp == NULL) {
                 printf("Failed to read input properly.\n");
                 free(input.buffer);

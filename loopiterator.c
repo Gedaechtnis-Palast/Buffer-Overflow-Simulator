@@ -6,7 +6,7 @@ void loopIterator()
     while (!success)
     {
         INPUT input = getInput();
-        char *iterations = (char *)(input.buffer + (int)(input.current_size / 2));
+        char *iterations = input.buffer + (int)(input.current_size / 2);
         /**
          * Get lowest four bits from first char and highest four bits of the next char.
          * The intersection simulates a buffer overflow impacting variables used for loops.

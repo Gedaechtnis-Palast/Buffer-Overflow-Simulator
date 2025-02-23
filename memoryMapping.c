@@ -254,3 +254,19 @@ bool freeMemory(void *address, SEGMENT_COLLECTION *collection)
     }
     return !notFreed;
 }
+
+/*
+    int test = 1234;
+    double array[255] = {1, 2, 3, 4, 5};
+    char test2 = 'a';
+
+    initMemoryMap();
+    allocStack((void *)&test, NULL, NULL, sizeof(int));
+    allocHeap((void *)(&array[0]), (void *)(&array[100]), (void *)(&array[254]), sizeof(int));
+    allocStatic((void *)&test2, NULL, NULL, sizeof(char));
+    printMemoryMap();
+    freeSegment((void *)&test);
+    freeSegment((void *)&test2);
+    freeSegment((void *)array);
+    printMemoryMap();
+*/

@@ -1,12 +1,13 @@
-#include "loopiterator.h"
+#include "loopEntryAttack.h"
+#include "memoryMapping.h"
 
-void loopIterator()
+void loopEntryAttack()
 {
     int success = 0;
     while (!success)
     {
-        INPUT input = getInput();
-        char *iterations = input.buffer + (int)(input.current_size / 2);
+        INPUT *input = getInput(20);
+        char *iterations = input->buffer + (int)(input->current_size / 2);
         /**
          * Get lowest four bits from first char and highest four bits of the next char.
          * The intersection simulates a buffer overflow impacting variables used for loops.

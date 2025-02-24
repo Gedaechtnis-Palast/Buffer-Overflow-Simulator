@@ -1,7 +1,7 @@
 #include "memoryMapping.h"
 #include "loopEntryAttack.h"
 #include "fileinput.h"
-#include <stdbool.h>
+#include "returnAddressAttack.h"
 
 #define HELP_FLAG "-h"
 #define FILE_PATH_FLAG "-p"
@@ -14,6 +14,9 @@ void printHelp();
 
 int main(int argc, char **argv)
 {
+    returnAddressAttack(NULL, 0);
+    return EXIT_SUCCESS;
+
     char filename[STR_LEN];
     bool filenameProvided = false;
     bool automatedAttack = false;

@@ -1,3 +1,6 @@
+#ifndef TEXT_INPUT_H
+#define TEXT_INPUT_H
+
 typedef struct
 {
     char *buffer;
@@ -12,3 +15,5 @@ typedef struct
  * @return INPUT struct containing the text
  */
 INPUT *getInput(int defaultCapacity);
+
+#endif

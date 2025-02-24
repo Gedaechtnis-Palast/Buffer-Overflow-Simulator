@@ -1,3 +1,6 @@
+#ifndef MEMORY_MAPPING_H
+#define MEMORY_MAPPING_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -85,3 +88,5 @@ bool freeSegment(void *address);
  * Used to remove a variable from the memory from a specific block like stack, heap or static memory.
  */
 bool freeMemory(void *address, SEGMENT_COLLECTION *collection);
+
+#endif

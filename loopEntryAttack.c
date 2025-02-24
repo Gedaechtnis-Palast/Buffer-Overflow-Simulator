@@ -1,7 +1,4 @@
 #include "loopEntryAttack.h"
-#include "memoryMapping.h"
-
-bool allocHeapBuffer(INPUT *input);
 
 void loopEntryAttack(char *fileBuffer, long fileBufferLength)
 {

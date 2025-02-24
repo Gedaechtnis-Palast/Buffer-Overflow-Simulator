@@ -3,13 +3,25 @@
 
 bool allocHeapBuffer(INPUT *input);
 
-void loopEntryAttack()
+void loopEntryAttack(char *fileBuffer, long fileBufferLength)
 {
+    INPUT *input;
     int success = 0;
     allocStack((void *)&success, NULL, NULL, sizeof(int));
     while (!success)
     {
-        INPUT *input = getInput(DEFAULT_CAPACITY);
+        if (fileBuffer == NULL || fileBufferLength == 0)
+        {
+            input = getInput(DEFAULT_CAPACITY);
+        }
+        else
+        {
+            success = 1; // force while loop to stop after first iteration
+            input = (INPUT *)malloc(sizeof(INPUT));
+            input->buffer = fileBuffer;
+            input->current_size = fileBufferLength;
+            input->capacity = fileBufferLength + 1;
+        }
         allocHeap(input, NULL, NULL, sizeof(INPUT));
         allocHeapBuffer(input);
         if (input->current_size > DEFAULT_CAPACITY)

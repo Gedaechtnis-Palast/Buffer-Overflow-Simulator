@@ -58,6 +58,7 @@ int main(int argc, char **argv)
 
     initMemoryMap();
 
+    char *content;
     if (useFileInput)
     {
         if (!filenameProvided)
@@ -74,17 +75,19 @@ int main(int argc, char **argv)
         }
 
         // Datei einlesen
-        char *content = readFile(filename);
-        if (content != NULL)
-        {
-            printf("\nDateiinhalt:\n%s\n", content);
-            free(content); // Speicher freigeben
-        }
+        content = readFile(filename);
     }
 
     if (loopEntryAttack)
     {
-        loopEntryAttack();
+        if (useFileInput)
+        {
+            FILE *fp = fopen(filename, "rb");
+            loopEntryAttack(content, getFileSize(fp));
+            free(fp);
+        }
+        else
+            loopEntryAttack(NULL, 0);
     }
     if (automatedAttack)
     {

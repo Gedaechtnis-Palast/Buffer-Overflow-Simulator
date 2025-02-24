@@ -112,7 +112,14 @@ int main(int argc, char **argv)
     }
     if (doReturnAddressAttack)
     {
-        returnAddressAttack(NULL, 0, depSecurityActive);
+        if (useFileInput)
+        {
+            FILE *fp = fopen(filename, "rb");
+            returnAddressAttack(content, getFileSize(fp), depSecurityActive);
+            free(fp);
+        }
+        else
+            returnAddressAttack(NULL, 0, depSecurityActive);
     }
     if (automatedAttack)
     {

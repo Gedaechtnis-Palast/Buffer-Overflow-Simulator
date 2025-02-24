@@ -8,6 +8,7 @@
 #define USE_FILE_INPUT "--use-file-input"
 #define AUTO_ATTACK_FLAG "--auto-attack"
 #define LOOP_ENTRY_ATTACK "--loop-entry-attack"
+#define RETURN_ADDRESS_ATTACK "--return-address-attack"
 #define USE_DEP_FLAG "--use-dep"
 
 void printHelp();
@@ -20,6 +21,7 @@ int main(int argc, char **argv)
     bool automatedAttack = false;
     bool depSecurityActive = false;
     bool doLoopEntryAttack = false;
+    bool doReturnAddressAttack = false;
     bool useFileInput = false;
 
     for (int i = 1; i < argc; i++)
@@ -33,6 +35,7 @@ int main(int argc, char **argv)
         {
             strncpy(filename, argv[i + 1], STR_LEN);
             filenameProvided = true;
+            useFileInput = true;
             continue;
         }
         if (!strcmp(argv[i], USE_FILE_INPUT))
@@ -42,24 +45,39 @@ int main(int argc, char **argv)
         }
         if (!strcmp(argv[i], AUTO_ATTACK_FLAG))
         {
+            printf("Automated attack is not yet implemented\n");
             automatedAttack = true;
             continue;
         }
         if (!strcmp(argv[i], USE_DEP_FLAG))
         {
+            printf("DEP security is active\n");
             depSecurityActive = true;
             continue;
         }
-        if (strcmp(argv[i], LOOP_ENTRY_ATTACK))
+        if (!strcmp(argv[i], LOOP_ENTRY_ATTACK))
         {
+            if (doReturnAddressAttack)
+            {
+                printf("You can only do one attack at a time. The return address attack will be performed now.\n");
+                continue;
+            }
             doLoopEntryAttack = true;
+            continue;
+        }
+        if (!strcmp(argv[i], RETURN_ADDRESS_ATTACK))
+        {
+            if (doLoopEntryAttack)
+            {
+                printf("You can only do one attack at a time. The loop entry attack will be performed now.\n");
+                continue;
+            }
+            doReturnAddressAttack = true;
             continue;
         }
     }
 
     initProgramMemory();
-    returnAddressAttack(NULL, 0, depSecurityActive);
-    return EXIT_SUCCESS;
 
     char *content;
     if (useFileInput)
@@ -81,7 +99,7 @@ int main(int argc, char **argv)
         content = readFile(filename);
     }
 
-    if (loopEntryAttack)
+    if (doLoopEntryAttack)
     {
         if (useFileInput)
         {
@@ -92,13 +110,13 @@ int main(int argc, char **argv)
         else
             loopEntryAttack(NULL, 0);
     }
+    if (doReturnAddressAttack)
+    {
+        returnAddressAttack(NULL, 0, depSecurityActive);
+    }
     if (automatedAttack)
     {
-        printf("automated attack\n");
-    }
-    if (depSecurityActive)
-    {
-        printf("DEP security is active\n");
+        printf("Automated attack is not yet implemented\n");
     }
 
     return EXIT_SUCCESS;
@@ -108,9 +126,10 @@ void printHelp()
 {
     printf("Usage Options:\n");
     printf("\t%-30s\tUse content of a file instead of a manual input\n", USE_FILE_INPUT);
-    printf("\t%-30s\tUse when the program should simulate an attack on its own\n", AUTO_ATTACK_FLAG);
-    printf("\t%-30s\tChoose attack with the goal to entry a loop with a buffer overflow\n", LOOP_ENTRY_ATTACK);
-    printf("\t%-30s\tEnable DEP security\n", USE_DEP_FLAG);
+    printf("\t%-30s\tUse when the program should simulate an attack on its own (coming soon!)\n", AUTO_ATTACK_FLAG);
+    printf("\t%-30s\tChoose to attack a loop entry condition with a buffer overflow\n", LOOP_ENTRY_ATTACK);
+    printf("\t%-30s\tChoose to attack the return address of a function with a buffer overflow\n", RETURN_ADDRESS_ATTACK);
+    printf("\t%-30s\tEnable DEP security (only affects return address attack)\n", USE_DEP_FLAG);
     printf("\n");
     printf("\t%-30s\tDefine relative or absolute path to a file\n", FILE_PATH_FLAG);
     printf("\t%-30s\tDisplay help text\n", HELP_FLAG);

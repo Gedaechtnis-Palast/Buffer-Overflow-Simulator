@@ -113,7 +113,8 @@ If you don't see any output in the Terminal (above the output which visualizes t
 Once you succeed to cause a buffer overflow, the program gets more verbose, printing some gibberish and an indicator like: `_ _ _ _ _ _ _ _ _ _`  
 This output tells you if you are already overwriting the return address and if the new address you provide matches a random address chosen by the program.  (the address is a decimal number like **`1234567890`**)  
 You will know when you are overwriting the address when an `x` is displayed instead of the `_`.  
-Your goal is now to guess the address combination (each `x` will turn into a number whenyou got it correct), keep in mind a real hacker does not have such a helpful output,
+Your goal is now to guess the address combination, each `x` will turn into a number when you guessed the correct one for this spot (make sure you don't remove it accidentally).  
+Keep in mind a real hacker does not have such a helpful output,
 they need to experiment around blindly increasing the risk of crashing the program and drawing attention to the vulnerability.  
 Try to be as efficient as possible, it is easy enough to succeed but hard enough to show how much effort it is to perform such an attack.
 

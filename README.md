@@ -7,6 +7,8 @@
     * [Windows Setup](#windows-setup)
     * [Linux Setup](#linux-setup)
   * [User Guide](#user-guide)
+    * [Loop Entry Attack](#loop-entry-attack)
+    * [Return Address Attack](#return-address-attack)
 <!-- TOC -->
 
 ## Motivation behind this Project
@@ -17,7 +19,7 @@ Since C is one of those languages with manual memory handling, the buffer overfl
 
 This project focuses on simulating a buffer overflow without relying on dangerous memory manipulation.  
 It showcases how a hacker could attack unsafe functions, exploiting insecure memory handling to cause a lot of damage.  
-Making this project executable, on any machine without requiring to disable all the kernel level security mechanisms like,  
+Making this project executable, on any machine without requiring to disable all the kernel level security mechanisms like,
 DEP, ASLR and stack canaries, was one of the biggest challenges of this project.
 
 You can find more information about the technical details in the [Developer documentation](DeveloperDocumentation.md).
@@ -42,13 +44,13 @@ For CMake, you just need a precompiled version 3.22+:
    Install it, unpack it and add the binary to your PATH
 
 After that you should be able to build this project:
-1. Clone the project: ``git clone <clone-url>``
-2. Open CMD and switch to the project folder: ``cd path\to\project\folder``
-3. Create a build folder: ``mkdir build``
-4. Switch into the build folder: ``cd build``
-5. Let CMake build the Makefiles for you: ``cmake .. -G "MinGW Makefiles"``
-6. Run ``mingw32-make`` to compile the project files
-7. Run ``.\Buffer-Overflow-Simulator.exe -h`` to see all the flags available
+1. Clone the project: `git clone <clone-url>`
+2. Open CMD and switch to the project folder: `cd path\to\project\folder`
+3. Create a build folder: `mkdir build`
+4. Switch into the build folder: `cd build`
+5. Let CMake build the Makefiles for you: `cmake .. -G "MinGW Makefiles"`
+6. Run `mingw32-make` to compile the project files
+7. Run `.\Buffer-Overflow-Simulator.exe -h` to see all the flags available
 
 ### Linux Setup
 To install CMake you can follow this [CMake installation guide](https://askubuntu.com/a/865294) 
@@ -56,21 +58,47 @@ To install CMake you can follow this [CMake installation guide](https://askubunt
 To install make follow this [Make installation guide](https://askubuntu.com/a/272020)
 
 After that you should be able to build this project:
-1. Clone the project: ``git clone <clone-url>``
-2. Open CMD and switch to the project folder: ``cd path/to/project/folder``
-3. Create a build folder: ``mkdir build``
-4. Switch into the build folder: ``cd build``
-5. Let CMake build the Makefiles for you: ``cmake ..``
-6. Run ``make`` to compile the project files
-7. Run ``.\Buffer-Overflow-Simulator -h`` to see all the flags available
+1. Clone the project: `git clone <clone-url>`
+2. Open CMD and switch to the project folder: `cd path/to/project/folder`
+3. Create a build folder: `mkdir build`
+4. Switch into the build folder: `cd build`
+5. Let CMake build the Makefiles for you: `cmake ..`
+6. Run `make` to compile the project files
+7. Run `.\Buffer-Overflow-Simulator -h` to see all the flags available
 
 ## User Guide
 
 Please read the [Setup guide](#setup-guide) first before continuing further.
 
-After building the project you can run the ``.\Buffer-Overflow-Simulator -h`` or ``.\Buffer-Overflow-Simulator.exe -h`` command to get more info about the available options.
+After building the project you can run the `.\Buffer-Overflow-Simulator -h` or `.\Buffer-Overflow-Simulator.exe -h` command to get more info about the available options.
 
 There are two game like attacks you can start, a loop entry attack and a return address overwrite attack.
 
 ### Loop Entry Attack
 
+Make sure to have a big terminal, since the memory visualization output pushes the feedback output up, sometimes out of sight for the user.
+
+The loop entry attack allows you to input some text, which will be safely evaluated and processed to check if your buffer overflow has successfully caused the loop to execute.
+
+Just run `.\Buffer-Overflow-Simulator --loop-entry-attack` and start typing.  
+The program will infinitely ask for your input, giving you an option to generate a buffer overflow.  
+The program will keep you there until you successfully entered the loop or you terminate the progam with `Ctrl + C`.
+
+You can also provide a file path by using `-p <path/to/text/file>`.  
+Another option would be to use the `--use-file-input` flag allowing you to enter the filepath on runtime inside the terminal.  
+Whenever you use a file as input to attempt a buffer overflow attack, it will immediately stop the execution, either the buffer enters the loop or not.  
+Causing the overflow to enter the loop is close to what a hacker has to do, though in a real attack it is much harder to be successful.
+
+### Return Address Attack
+
+Make sure to have a big terminal, since the memory visualization output pushes the feedback output up, sometimes out of sight for the user.
+
+The return address attack works like the Loop entry attack though it will be more verbose about your progress.  
+If you don't see any output in the Terminal (above the output which visualizes the memory used) you did not yet cause buffer overflow, just keep playing around.
+
+Once you succeed to cause a buffer overflow, the program gets more verbose, printing some gibberish and an indicator like: `lajdflasdjfjasdf _ _ _ _ _ _ _ _ _ _`  
+This output tells you if you are already overwriting the return address and if the new address you provide matches a random address chosen by the program.  
+Your goal is now to guess the address combination, keep in mind a real hacker does not have such a helpful output, they need to experiment around blindly increasing the risk of crashing the program and drawing attention to the vulnerability.  
+Try to be as efficient as possible, it is easy enough to succeed but hard enough to show how much effort it is to perform such an attack.
+
+You can use the `--use-dep` flag for a different ending of this little game.

@@ -45,11 +45,14 @@ For CMake, you just need a precompiled version 3.22+:
    Install it, unpack it and add the binary to your PATH
 
 After that you should be able to build this project:
-1. Clone the project: `git clone <clone-url>`
-2. Open CMD and switch to the project folder: `cd path\to\project\folder`
+1. Clone the project: `git clone <clone-url>`  
+(replace `<clone-url>` with the url from the `<>Code` button)
+2. Open CMD and switch to the project folder: `cd path\to\project\folder`  
+(replace `path\to\project\folder` with the actual path to the cloned project on your machine)
 3. Create a build folder: `mkdir build`
 4. Switch into the build folder: `cd build`
-5. Let CMake build the Makefiles for you: `cmake .. -G "MinGW Makefiles"`
+5. Let CMake build the Makefiles for you: `cmake .. -G "MinGW Makefiles"`  
+(the generator "MinGW Makefiles" works fine but you can use other ones if you like)
 6. Run `mingw32-make` to compile the project files
 7. Run `.\Buffer-Overflow-Simulator.exe -h` to see all the flags available
 

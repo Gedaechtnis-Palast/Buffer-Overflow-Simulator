@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-void returnAddressAttack(char *fileBuffer, long fileBufferLength);
+void returnAddressAttack(char *fileBuffer, long fileBufferLength, bool depSecurityActive);
 bool checkSuccess(char *addressString, int returnAddressLength, char *input, int addressOverwrite);
 int digitCount(unsigned long number);
 

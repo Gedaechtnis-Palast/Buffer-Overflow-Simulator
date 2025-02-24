@@ -2,7 +2,7 @@
 #include "loopEntryAttack.h"
 #include "memoryMapping.h"
 
-void returnAddressAttack(char *fileBuffer, long fileBufferLength)
+void returnAddressAttack(char *fileBuffer, long fileBufferLength, bool depSecurityActive)
 {
 
     void *returnAddress = __builtin_return_address(0); // do not map this, it causes some flaky null pointers
@@ -49,7 +49,24 @@ void returnAddressAttack(char *fileBuffer, long fileBufferLength)
                 allocStack(&addressOverwrite, NULL, NULL, sizeof(int));
                 if (checkSuccess(addressString, addressLength, input->buffer, addressOverwrite))
                 {
-                    printf("You successfully overwrote the return address to execute code from your buffer overflow!\n");
+                    if (depSecurityActive)
+                    {
+                        printf("Yay you successfully overwrote the return address but DEP Security wont let you run your malicious code!");
+                    }
+                    else
+                    {
+                        printf("You successfully overwrote the return address to execute code from your buffer overflow!\n");
+                    }
+                    printMemoryMap();
+                    freeSegment(&addressOverwrite);
+                    freeSegment((void *)&success);
+                    freeSegment((void *)input->buffer);
+                    freeSegment((void *)input);
+                    free((void *)input->buffer);
+                    free((void *)input);
+                    freeSegment((void *)&returnAddressAddress);
+                    freeSegment((void *)&addressLength);
+                    freeSegment((void *)&addressString);
                     return;
                 }
                 for (int i = 0; i < addressOverwrite && i < addressLength; i++)

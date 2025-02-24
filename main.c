@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     }
 
     initProgramMemory();
-    returnAddressAttack(NULL, 0);
+    returnAddressAttack(NULL, 0, depSecurityActive);
     return EXIT_SUCCESS;
 
     char *content;

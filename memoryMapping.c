@@ -84,6 +84,11 @@ void printSegmentCollection(SEGMENT_COLLECTION *collection)
     unsigned long previousAddress = collection->startSegmentAddress->startAddress;
     for (unsigned long i = 0; i < collection->mappedSegments; i++)
     {
+        if (currentSegment == NULL)
+        {
+            printf("startsegment->next: %p", collection->startSegmentAddress->next);
+            printf("CURRENT NULsL %d %d\n", i, collection->mappedSegments);
+        }
         unsigned long fillerDiff = currentSegment->startAddress - previousAddress;
         if (fillerDiff > 100)
         {

@@ -1,3 +1,6 @@
+#ifndef FILE_INPUT_H
+#define FILE_INPUT_H
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -6,3 +9,5 @@
 
 char *readFile(const char *filename);
 long getFileSize(FILE *fp);
+
+#endif

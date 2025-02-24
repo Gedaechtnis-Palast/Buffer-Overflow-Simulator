@@ -5,14 +5,18 @@
 void returnAddressAttack(char *fileBuffer, long fileBufferLength)
 {
 
-    unsigned long returnAddress = (uintptr_t)__builtin_return_address(0);
-    int addressLength = digitCount(returnAddress);
+    void *returnAddress = __builtin_return_address(0); // do not map this, it causes some flaky null pointers
+    unsigned long returnAddressAddress = (uintptr_t)&returnAddress;
+    int addressLength = digitCount(returnAddressAddress);
     char addressString[addressLength + 1];
-    sprintf(addressString, "%lu", returnAddress);
+    sprintf(addressString, "%lu", returnAddressAddress);
+    allocStack(&returnAddressAddress, NULL, NULL, sizeof(unsigned long));
+    allocStack(&addressLength, NULL, NULL, sizeof(int));
+    allocStack(&addressString, &addressString[addressLength], NULL, sizeof(char));
 
     INPUT *input;
     int success = 0;
-    // allocStack((void *)&success, NULL, NULL, sizeof(int));
+    allocStack((void *)&success, NULL, NULL, sizeof(int));
     while (!success)
     {
         if (fileBuffer == NULL || fileBufferLength == 0)
@@ -27,8 +31,8 @@ void returnAddressAttack(char *fileBuffer, long fileBufferLength)
             input->current_size = fileBufferLength;
             input->capacity = fileBufferLength + 1;
         }
-        // allocHeap(input, NULL, NULL, sizeof(INPUT));
-        // allocHeapBuffer(input);
+        allocHeap(input, NULL, NULL, sizeof(INPUT));
+        allocHeapBuffer(input);
         if (input->current_size > DEFAULT_CAPACITY)
         {
             if (input->current_size <= DEFAULT_CAPACITY * 2)
@@ -42,6 +46,7 @@ void returnAddressAttack(char *fileBuffer, long fileBufferLength)
             else
             {
                 int addressOverwrite = input->current_size - DEFAULT_CAPACITY * 2;
+                allocStack(&addressOverwrite, NULL, NULL, sizeof(int));
                 if (checkSuccess(addressString, addressLength, input->buffer, addressOverwrite))
                 {
                     printf("You successfully overwrote the return address to execute code from your buffer overflow!\n");
@@ -62,15 +67,26 @@ void returnAddressAttack(char *fileBuffer, long fileBufferLength)
                     }
                 }
                 printf("\n");
+                printMemoryMap();
+                freeSegment(&addressOverwrite);
             }
-
-            // freeSegment((void *)&success);
+            freeSegment((void *)&success);
         }
-        // freeSegment((void *)input->buffer);
-        // freeSegment((void *)input);
+        else
+        {
+            printMemoryMap();
+        }
+        freeSegment((void *)input->buffer);
+        freeSegment((void *)input);
         free((void *)input->buffer);
         free((void *)input);
-        // printMemoryMap();
+        printMemoryMap();
+        if (success)
+        {
+            freeSegment((void *)&returnAddressAddress);
+            freeSegment((void *)&addressLength);
+            freeSegment((void *)&addressString);
+        }
     }
 }
 

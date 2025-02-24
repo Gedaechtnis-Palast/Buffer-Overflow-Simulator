@@ -11,12 +11,10 @@
 #define USE_DEP_FLAG "--use-dep"
 
 void printHelp();
+void initProgramMemory();
 
 int main(int argc, char **argv)
 {
-    returnAddressAttack(NULL, 0);
-    return EXIT_SUCCESS;
-
     char filename[STR_LEN];
     bool filenameProvided = false;
     bool automatedAttack = false;
@@ -59,7 +57,9 @@ int main(int argc, char **argv)
         }
     }
 
-    initMemoryMap();
+    initProgramMemory();
+    returnAddressAttack(NULL, 0);
+    return EXIT_SUCCESS;
 
     char *content;
     if (useFileInput)
@@ -115,4 +115,36 @@ void printHelp()
     printf("\t%-30s\tDefine relative or absolute path to a file\n", FILE_PATH_FLAG);
     printf("\t%-30s\tDisplay help text\n", HELP_FLAG);
     printf("\n");
+}
+
+void initProgramMemory()
+{
+    initMemoryMap();
+    size_t voidPointerSize = sizeof(void *);
+    // functions from main.c
+    allocStatic(main, main + 89 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(printHelp, printHelp + 12 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(initProgramMemory, initProgramMemory + 29 * voidPointerSize, NULL, voidPointerSize);
+    // functions from memoryMapping.h
+    allocStatic(createSegment, createSegment + 29 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(createSegmentCollection, createSegmentCollection + 8 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(initMemoryMap, initMemoryMap + 6 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(printMemoryMap, printMemoryMap + 8 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(printSegmentCollection, printSegmentCollection + 41, NULL, voidPointerSize);
+    allocStatic(allocStack, allocStack + 3 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(allocHeap, allocHeap + 3 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(allocStatic, allocStatic + 3 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(allocSegment, allocSegment + 89 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(freeSegment, freeSegment + 14 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(freeMemory, freeMemory + 45 * voidPointerSize, NULL, voidPointerSize);
+    // functions from loopEntryAttack.h
+    allocStatic(loopEntryAttack, loopEntryAttack + 48 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(allocHeapBuffer, allocHeapBuffer + 6 * voidPointerSize, NULL, voidPointerSize);
+    // functions from fileinput.h
+    allocStatic(readFile, readFile + 40 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(getFileSize, getFileSize + 6 * voidPointerSize, NULL, voidPointerSize);
+    // functions from returnAddressAttack.h
+    allocStatic(returnAddressAttack, returnAddressAttack + 20 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(checkSuccess, checkSuccess + 11 * voidPointerSize, NULL, voidPointerSize);
+    allocStatic(digitCount, digitCount + 5 * voidPointerSize, NULL, voidPointerSize);
 }

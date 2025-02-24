@@ -7,6 +7,7 @@
     * [Windows Setup](#windows-setup)
     * [Linux Setup](#linux-setup)
   * [User Guide](#user-guide)
+    * [Memory visualization](#memory-visualization)
     * [Loop Entry Attack](#loop-entry-attack)
     * [Return Address Attack](#return-address-attack)
 <!-- TOC -->
@@ -32,7 +33,7 @@ Before starting with the project make sure to read the following:
 
 This project provides a CMakeLists.txt which requires the following:
  - CMake Version 3.22+ (For automatic Makefile generation)
- - Make(Linux)/mingw32-make(Windows)
+ - Make (Linux) / mingw32-make (Windows)
 
 ### Windows Setup
 
@@ -59,7 +60,7 @@ To install make follow this [Make installation guide](https://askubuntu.com/a/27
 
 After that you should be able to build this project:
 1. Clone the project: `git clone <clone-url>`
-2. Open CMD and switch to the project folder: `cd path/to/project/folder`
+2. Open your Terminal and switch to the project folder: `cd path/to/project/folder`
 3. Create a build folder: `mkdir build`
 4. Switch into the build folder: `cd build`
 5. Let CMake build the Makefiles for you: `cmake ..`
@@ -73,6 +74,19 @@ Please read the [Setup guide](#setup-guide) first before continuing further.
 After building the project you can run the `.\Buffer-Overflow-Simulator -h` or `.\Buffer-Overflow-Simulator.exe -h` command to get more info about the available options.
 
 There are two game like attacks you can start, a loop entry attack and a return address overwrite attack.
+
+### Memory visualization
+
+Before going into the attack simulations the visualization needs to be explained.  
+There are three main areas in the memory, the stack, heap and static memory.  
+Each of them are separately displayed and show what memory the program is using (it does not show everything but the necessary parts).  
+There are four indicators to look out for:
+ - White bars (pipes) - indicating memory addresses not used by the program
+ - Green bars (pipes) - indicating memory addresses rightfully used by the program
+ - Red bars (pipes) - indicating memory addresses maliciously used by the program indicating a buffer overflow
+ - Yellow truncated message - indicating how many unused addresses have been truncated/omitted due to the space limitations of the terminal
+
+Unused memory addresses does not mean the memory addresses are not used by any program, it means this program does not use those addresses by itself.
 
 ### Loop Entry Attack
 
@@ -96,8 +110,9 @@ Make sure to have a big terminal, since the memory visualization output pushes t
 The return address attack works like the Loop entry attack though it will be more verbose about your progress.  
 If you don't see any output in the Terminal (above the output which visualizes the memory used) you did not yet cause buffer overflow, just keep playing around.
 
-Once you succeed to cause a buffer overflow, the program gets more verbose, printing some gibberish and an indicator like: `lajdflasdjfjasdf _ _ _ _ _ _ _ _ _ _`  
-This output tells you if you are already overwriting the return address and if the new address you provide matches a random address chosen by the program.  
+Once you succeed to cause a buffer overflow, the program gets more verbose, printing some gibberish and an indicator like: `_ _ _ _ _ _ _ _ _ _`  
+This output tells you if you are already overwriting the return address and if the new address you provide matches a random address chosen by the program.  (the address is a decimal number like **`1234567890`**)  
+You will know when you are overwriting the address when an `x` is displayed instead of the `_`.  
 Your goal is now to guess the address combination, keep in mind a real hacker does not have such a helpful output, they need to experiment around blindly increasing the risk of crashing the program and drawing attention to the vulnerability.  
 Try to be as efficient as possible, it is easy enough to succeed but hard enough to show how much effort it is to perform such an attack.
 

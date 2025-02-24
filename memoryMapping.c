@@ -1,7 +1,17 @@
 #include "memoryMapping.h"
 
+/**
+ * for local variables with short timespan
+ */
 SEGMENT_COLLECTION stack;
+/**
+ * for variables created with malloc or realloc
+ */
 SEGMENT_COLLECTION heap;
+/**
+ * for static variables or direct string definitions
+ * e.g. (char *string = "this is a direct string definition")
+ */
 SEGMENT_COLLECTION staticMem;
 
 SEGMENT *createSegment(void *startAddress, void *endAddress, void *overflowEndAddress)
@@ -54,23 +64,37 @@ bool initMemoryMap()
 
 void printMemoryMap()
 {
-    printf("\n[stack]\n");
+    printf("\n[stack]\n(size:%d)\n", stack.endAddress - stack.startAddress);
     printSegmentCollection(&stack);
-    printf("[heap]\n");
+    printf("[heap]\n(size:%d)\n", heap.endAddress - heap.startAddress);
     printSegmentCollection(&heap);
-    printf("[static]\n");
+    printf("[static]\n(size:%d)\n", staticMem.endAddress - staticMem.startAddress);
     printSegmentCollection(&staticMem);
 };
 
 void printSegmentCollection(SEGMENT_COLLECTION *collection)
 {
+    if (collection->startSegmentAddress == NULL)
+    {
+        printf("-NO MEMORY USED-\n");
+        return;
+    }
+
     SEGMENT *currentSegment = collection->startSegmentAddress;
+    unsigned long previousAddress = collection->startSegmentAddress->startAddress;
     for (unsigned long i = 0; i < collection->mappedSegments; i++)
     {
-        unsigned long fillerDiff = currentSegment->startAddress - collection->startAddress;
-        for (unsigned long filler = 0; filler < fillerDiff; filler++)
+        unsigned long fillerDiff = currentSegment->startAddress - previousAddress;
+        if (fillerDiff > 100)
         {
-            printf("%s|", WHITE);
+            printf("%s||||||||||%s-[%d-addresses-truncated]-%s||||||||||", WHITE, YELLOW, fillerDiff - 20, WHITE);
+        }
+        else
+        {
+            for (unsigned long filler = 0; filler < fillerDiff; filler++)
+            {
+                printf("%s|", WHITE);
+            }
         }
         unsigned long memoryDiff = currentSegment->endAddress - currentSegment->startAddress;
         for (unsigned long ms = 0; ms < memoryDiff; ms++)
@@ -85,6 +109,7 @@ void printSegmentCollection(SEGMENT_COLLECTION *collection)
                 printf("%s|", RED);
             }
         }
+        previousAddress = currentSegment->startAddress;
         currentSegment = currentSegment->next;
     }
     printf("%s\n", NORMAL);

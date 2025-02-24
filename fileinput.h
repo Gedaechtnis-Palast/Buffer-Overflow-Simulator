@@ -5,3 +5,4 @@
 #define STR_LEN 256 // Maximale Länge des Dateipfads
 
 char *readFile(const char *filename);
+long getFileSize(FILE *fp);

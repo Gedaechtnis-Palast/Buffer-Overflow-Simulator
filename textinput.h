@@ -1,4 +1,5 @@
-typedef struct {
+typedef struct
+{
     char *buffer;
     int current_size;
     int capacity;
@@ -10,5 +11,4 @@ typedef struct {
  * The INPUT struct will adapt its size dynamically based on the user input length.
  * @return INPUT struct containing the text
  */
-INPUT getInput();
-
+INPUT *getInput(int defaultCapacity);

@@ -2,11 +2,13 @@
 #include "loopEntryAttack.h"
 #include "memoryMapping.h"
 
-void returnAddressAttack(char *fileBuffer, long fileBufferLength, bool depSecurityActive)
+void returnAddressAttack(char *fileBuffer, long fileBufferLength, bool depSecurityActive, bool useCheats)
 {
 
     void *returnAddress = __builtin_return_address(0); // do not map this, it causes some flaky null pointers
     unsigned long returnAddressAddress = (uintptr_t)&returnAddress;
+    if (useCheats)
+        printf("%lu\n", returnAddressAddress);
     int addressLength = digitCount(returnAddressAddress);
     char addressString[addressLength + 1];
     sprintf(addressString, "%lu", returnAddressAddress);

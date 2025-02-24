@@ -10,6 +10,7 @@
 #define LOOP_ENTRY_ATTACK "--loop-entry-attack"
 #define RETURN_ADDRESS_ATTACK "--return-address-attack"
 #define USE_DEP_FLAG "--use-dep"
+#define USE_CHEAT "--use-cheats"
 
 void printHelp();
 void initProgramMemory();
@@ -23,6 +24,7 @@ int main(int argc, char **argv)
     bool doLoopEntryAttack = false;
     bool doReturnAddressAttack = false;
     bool useFileInput = false;
+    bool useCheats = false;
 
     for (int i = 1; i < argc; i++)
     {
@@ -75,6 +77,11 @@ int main(int argc, char **argv)
             doReturnAddressAttack = true;
             continue;
         }
+        if (!strcmp(argv[i], USE_CHEAT))
+        {
+            useCheats = true;
+            continue;
+        }
     }
 
     initProgramMemory();
@@ -115,11 +122,11 @@ int main(int argc, char **argv)
         if (useFileInput)
         {
             FILE *fp = fopen(filename, "rb");
-            returnAddressAttack(content, getFileSize(fp), depSecurityActive);
+            returnAddressAttack(content, getFileSize(fp), depSecurityActive, useCheats);
             free(fp);
         }
         else
-            returnAddressAttack(NULL, 0, depSecurityActive);
+            returnAddressAttack(NULL, 0, depSecurityActive, useCheats);
     }
     if (automatedAttack)
     {
@@ -137,6 +144,7 @@ void printHelp()
     printf("\t%-30s\tChoose to attack a loop entry condition with a buffer overflow\n", LOOP_ENTRY_ATTACK);
     printf("\t%-30s\tChoose to attack the return address of a function with a buffer overflow\n", RETURN_ADDRESS_ATTACK);
     printf("\t%-30s\tEnable DEP security (only affects return address attack)\n", USE_DEP_FLAG);
+    printf("\t%-30s\tShow return address for return address attack (for fast demo)\n", USE_DEP_FLAG);
     printf("\n");
     printf("\t%-30s\tDefine relative or absolute path to a file\n", FILE_PATH_FLAG);
     printf("\t%-30s\tDisplay help text\n", HELP_FLAG);
